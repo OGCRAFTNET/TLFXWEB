@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<link rel="icon" href="https://media.forgecdn.net/avatars/1268/868/638825636572737473.png" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License - TrueLightFX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        pixel: ['Silkscreen', 'cursive'],
+                        mono: ['monospace'], // Added for license text alignment
+                    },
+                    colors: {
+                        pageBg: '#050505',
+                        cardBg: '#0F0F0F',
+                        accentGold: '#fbbf24',
+                        accentOrange: '#f16436',
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        .glass-panel {
+            background: rgba(5, 5, 5, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .license-card {
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-pageBg text-white font-sans antialiased overflow-x-hidden selection:bg-accentGold selection:text-black" x-data="{}">
+
+<!-- Background Blobs -->
+<div class="fixed inset-0 pointer-events-none -z-50 overflow-hidden">
+    <div class="absolute top-[-10%] left-[-20%] w-[80%] h-[50%] bg-blue-900/10 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[-10%] right-[-20%] w-[80%] h-[50%] bg-accentGold/5 rounded-full blur-[100px]"></div>
+</div>
+
+<!-- Navigation (Simplified) -->
+<nav class="fixed w-full z-40 glass-panel border-t-0 border-x-0 top-0">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3 z-50">
+            <a href="index.html" class="flex flex-col hover:opacity-80 transition-opacity">
+                <span class="font-bold leading-none font-pixel tracking-wide text-lg mt-1">TrueLightFX</span>
+            </a>
+        </div>
+        <div class="flex gap-4 items-center">
+            <a href="#" onclick="history.back()" class="text-xs font-pixel tracking-wider text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                BACK
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<section class="relative pt-32 pb-20 px-6 max-w-4xl mx-auto min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <div class="mb-12 text-center reveal-on-scroll">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-accentGold/10 rounded-sm border border-accentGold/20 text-accentGold text-xs font-bold uppercase tracking-wider mb-6 font-pixel">
+            Legal Document
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 font-pixel tracking-tight">MIT License</h1>
+        <p class="text-gray-400 font-sans tracking-wide">Open Source Licensing Terms</p>
+    </div>
+
+    <!-- License Container -->
+    <div class="license-card rounded-lg p-8 md:p-12 relative overflow-hidden reveal-on-scroll shadow-2xl">
+        <!-- Decoration Line -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accentGold to-accentOrange"></div>
+
+        <!-- License Text -->
+        <div class="font-sans text-gray-300 leading-relaxed space-y-8">
+
+            <!-- Copyright Holders -->
+            <div class="space-y-1 font-pixel text-sm text-white border-b border-white/10 pb-6 mb-8">
+                <p>Copyright (c) 2021 Septonious</p>
+                <p>Copyright (c) 2026 TrueLightFX</p>
+            </div>
+
+            <!-- Permission Text -->
+            <p class="text-justify">
+                Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:
+            </p>
+
+            <p class="pl-4 border-l-2 border-white/20 italic text-gray-400">
+                The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.
+            </p>
+
+            <!-- Disclaimer (All Caps Section) -->
+            <div class="bg-black/30 p-6 rounded-sm border border-white/5 text-xs md:text-sm font-mono tracking-tight text-gray-400 uppercase">
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                SOFTWARE.
+            </div>
+
+        </div>
+
+        <!-- Watermark/Stamp effect -->
+        <div class="absolute bottom-4 right-4 opacity-5 pointer-events-none">
+            <svg class="w-32 h-32" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.5 9C10.12 9 9 10.12 9 11.5C9 12.88 10.12 14 11.5 14C12.88 14 14 12.88 14 11.5C14 10.12 12.88 9 11.5 9ZM12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-center mt-12 gap-4 reveal-on-scroll">
+        <button onclick="window.print()" class="px-6 py-3 bg-white/5 border border-white/10 hover:border-accentGold/50 text-gray-300 hover:text-white rounded-sm font-pixel text-xs tracking-widest transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            PRINT LICENSE
+        </button>
+        <a href="https://github.com/OGCRAFTNET/TrueLightFX/blob/main/LICENSE" target="_blank" class="px-6 py-3 bg-white/5 border border-white/10 hover:border-white/30 text-gray-300 hover:text-white rounded-sm font-pixel text-xs tracking-widest transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            VIEW ON GITHUB
+        </a>
+    </div>
+
+</section>
+
+<!-- Simple Footer -->
+<footer class="py-12 bg-black border-t border-white/10 text-center">
+    <p class="text-xs text-gray-600 font-pixel">&copy; 2026 OGCRAFTNET STUDIOS · Vienna, AT</p>
+</footer>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('reveal-visible');
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+</script>
+</body>
+</html>
