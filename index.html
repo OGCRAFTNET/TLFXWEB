@@ -20,100 +20,216 @@
                     },
                     colors: {
                         pageBg: '#050505',
-                        cardBg: '#0F0F0F',
+                        cardBg: '#0A0A0A',
                         accentGold: '#fbbf24',
                         accentOrange: '#f16436',
+                        modrinth: '#1bd96a',
                     },
                     animation: {
-                        'float': 'float 8s ease-in-out infinite',
-                        'shimmer': 'shimmer 2s infinite linear',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        shimmer: {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(100%)' },
-                        }
+                        'pulse-slow': 'pulse 4s ease-in-out infinite',
                     }
                 }
             }
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; }
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
+
+        /* ── Clean Nav glass ── */
         .glass-panel {
-            background: rgba(5, 5, 5, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.3s ease;
         }
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        .glass-panel.scrolled {
+            background: rgba(5, 5, 5, 0.98);
         }
-        .reveal-visible {
-            opacity: 1;
-            transform: translateY(0);
+
+        /* ══════════════════════════════════════════════════════════ */
+        /*  CINEMATIC NETFLIX-STYLE INTRO                             */
+        /* ══════════════════════════════════════════════════════════ */
+        #page-loader {
+            position: fixed; inset: 0; z-index: 10000;
+            background: #000;
+            display: flex; align-items: center; justify-content: center;
+            animation: loaderBgOut 0.6s ease-in-out 2.4s forwards;
+            pointer-events: none;
         }
+        @keyframes loaderBgOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+        
+        .cinematic-text {
+            animation: cinematicReveal 2.4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+            will-change: transform, opacity, filter, letter-spacing;
+            text-transform: uppercase;
+        }
+        @keyframes cinematicReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+                letter-spacing: -10px;
+                filter: blur(12px);
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1);
+                letter-spacing: 2px;
+                filter: blur(0px);
+                text-shadow: 0 0 60px rgba(251,191,36,0.6), 0 0 20px rgba(255,255,255,0.4);
+            }
+            75% {
+                opacity: 1;
+                transform: scale(1.08);
+                letter-spacing: 8px;
+                filter: blur(0px);
+                text-shadow: 0 0 10px rgba(251,191,36,0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+                letter-spacing: 20px;
+                filter: blur(15px);
+            }
+        }
+
+        /* ── Hero Animations (Timed after Intro) ── */
+        .hero-reveal {
+            opacity: 0; transform: translateY(24px);
+            animation: heroFadeIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        @keyframes heroFadeIn { to { opacity: 1; transform: none; } }
+
+        /* ── Standard Reveal system ── */
+        .reveal {
+            opacity:0; transform:translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal.from-left  { transform:translateX(-30px); }
+        .reveal.from-right { transform:translateX(30px); }
+        .reveal.visible    { opacity:1 !important; transform:none !important; }
+
+        /* ── Stagger children ── */
+        .stagger-children > * {
+            opacity:0; transform:translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        .stagger-children.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0.05s; }
+        .stagger-children.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.15s; }
+        .stagger-children.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.25s; }
+        .stagger-children.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.35s; }
+
+        /* ── Flat Feature cards ── */
+        .feature-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(251,191,36,0.5);
+            background: rgba(255,255,255,0.04);
+        }
+        .icon-box { transition: all 0.3s ease; }
+        .feature-card:hover .icon-box {
+            border-color: rgba(251,191,36,0.5);
+            color: #fbbf24;
+        }
+
+        /* ── Nav link underline ── */
+        .nav-link { position:relative; }
+        .nav-link::after {
+            content:''; position:absolute; bottom:-4px; left:0;
+            width:0; height:1px; background:white;
+            transition:width 0.3s ease;
+        }
+        .nav-link:hover::after { width:100%; }
+
+        /* ── Slideshows ── */
+        .slide {
+            position:absolute; inset:0;
+            opacity:0; transition:opacity 1s ease-in-out;
+            object-fit:cover; width:100%; height:100%;
+        }
+        .slide.active { opacity:1; }
+
+        .slide-dot {
+            width:6px; height:6px; border-radius:0; /* Flat dots */
+            background:rgba(255,255,255,0.3);
+            transition:all 0.3s ease;
+            cursor:pointer;
+        }
+        .standard-slideshow .slide-dot.active { background:#fbbf24; width:18px; }
+        .lite-slideshow .slide-dot.active { background:#3b82f6; width:18px; }
     </style>
 </head>
 <body class="bg-pageBg text-white font-sans antialiased overflow-x-hidden selection:bg-accentGold selection:text-black"
-      x-data="{ downloadModalOpen: false, sourceModalOpen: false, mobileMenuOpen: false }">
+      x-data="{ downloadModalOpen:false, sourceModalOpen:false, mobileMenuOpen:false }">
 
-<div class="fixed inset-0 pointer-events-none -z-50 overflow-hidden">
-    <div class="absolute top-[-10%] left-[-20%] w-[80%] h-[50%] bg-blue-900/10 rounded-full blur-[100px]"></div>
-    <div class="absolute bottom-[-10%] right-[-20%] w-[80%] h-[50%] bg-accentGold/5 rounded-full blur-[100px]"></div>
+<!-- ── Cinematic Loader ── -->
+<div id="page-loader">
+    <h1 class="cinematic-text font-pixel text-4xl md:text-6xl lg:text-8xl text-white font-bold tracking-tight">
+        TRUELIGHT<span class="text-accentGold">FX</span>
+    </h1>
 </div>
 
-<nav class="fixed w-full z-40 glass-panel border-t-0 border-x-0 top-0">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-3 z-50">
-            <div class="flex flex-col">
-                <span class="font-bold leading-none font-pixel tracking-wide text-lg mt-1">TrueLightFX</span>
-            </div>
-        </div>
-        <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400 font-sans tracking-wide items-center">
-            <a href="#features" class="hover:text-white transition-colors">Features</a>
-            <a href="#lite" class="hover:text-blue-300 text-blue-400 transition-colors">Lite Edition</a>
-            <a href="#gallery" class="hover:text-white transition-colors">Gallery</a>
+<!-- ── Clean Ambient glow ── -->
+<div class="fixed inset-0 pointer-events-none -z-50 overflow-hidden">
+    <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accentGold/5 rounded-full blur-[100px]"></div>
+</div>
+
+<!-- ══════════════════════ NAV ══ -->
+<nav id="main-nav" class="fixed w-full z-40 glass-panel top-0">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <span class="font-bold font-pixel tracking-wider text-xl mt-1 hover:text-accentGold transition-colors duration-300 cursor-default z-50">TrueLightFX</span>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400 tracking-wide items-center">
+            <a href="#features" class="nav-link hover:text-white transition-colors duration-200">Features</a>
+            <a href="#standard" class="nav-link hover:text-accentGold transition-colors duration-200">Standard</a>
+            <a href="#lite"     class="nav-link text-blue-400 hover:text-blue-300 transition-colors duration-200">Lite V5</a>
             <div class="w-px h-4 bg-white/10 mx-2"></div>
-            <button @click="sourceModalOpen = true" class="text-xs hover:text-white flex items-center gap-2 group">
-                <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            <button @click="sourceModalOpen=true" class="text-xs hover:text-white flex items-center gap-2 group transition-colors duration-200">
+                <svg class="w-4 h-4 text-gray-500 group-hover:text-white transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 Source
             </button>
-            <button @click="downloadModalOpen = true" class="flex items-center gap-2 px-5 py-2 text-xs font-bold bg-white text-black rounded-sm hover:bg-gray-200 transition-all hover:scale-105 active:scale-95 font-pixel tracking-widest">
-                <span>DOWNLOAD</span>
+            <button @click="downloadModalOpen=true" class="flex items-center gap-2 px-6 py-2.5 text-xs font-bold bg-white text-black hover:bg-accentGold rounded-sm transition-colors duration-200 font-pixel tracking-widest">
+                DOWNLOAD
             </button>
         </div>
-        <button @click="mobileMenuOpen = true" class="md:hidden z-50 p-2 text-white hover:text-accentGold transition-colors">
+        <button @click="mobileMenuOpen=true" class="md:hidden z-50 p-2 text-white hover:text-accentGold transition-colors duration-200">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
         </button>
     </div>
 </nav>
 
-<div x-show="mobileMenuOpen" class="fixed inset-0 z-[60] md:hidden" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-    <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl"></div>
-    <div class="relative h-full flex flex-col p-8" x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="translate-y-10 opacity-0" x-transition:enter-end="translate-y-0 opacity-100">
+<!-- ── Mobile Menu ── -->
+<div x-show="mobileMenuOpen" class="fixed inset-0 z-[60] md:hidden" style="display:none;"
+     x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"  x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+    <div class="absolute inset-0 bg-black/95 backdrop-blur-xl"></div>
+    <div class="relative h-full flex flex-col p-8"
+         x-show="mobileMenuOpen"
+         x-transition:enter="transition ease-out duration-300 delay-75" x-transition:enter-start="translate-y-8 opacity-0" x-transition:enter-end="translate-y-0 opacity-100">
         <div class="flex items-center justify-between mb-16">
-            <span class="font-pixel text-xl tracking-wide">TrueLightFX</span>
-            <button @click="mobileMenuOpen = false" class="p-2 text-gray-400 hover:text-white">
+            <span class="font-pixel text-2xl tracking-wide">TrueLightFX</span>
+            <button @click="mobileMenuOpen=false" class="p-2 text-gray-400 hover:text-white transition-colors duration-300">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
         <div class="flex flex-col gap-8">
-            <a href="#features" @click="mobileMenuOpen = false" class="text-4xl font-pixel text-white hover:text-accentGold transition-colors">Features</a>
-            <a href="#lite" @click="mobileMenuOpen = false" class="text-4xl font-pixel text-blue-400 hover:text-blue-300 transition-colors">Lite Edition</a>
-            <a href="#gallery" @click="mobileMenuOpen = false" class="text-4xl font-pixel text-white hover:text-accentGold transition-colors">Gallery</a>
+            <a href="#features" @click="mobileMenuOpen=false" class="text-5xl font-pixel text-white hover:text-accentGold transition-colors duration-200">Features</a>
+            <a href="#standard" @click="mobileMenuOpen=false" class="text-5xl font-pixel text-white hover:text-accentGold transition-colors duration-200">Standard</a>
+            <a href="#lite"     @click="mobileMenuOpen=false" class="text-5xl font-pixel text-blue-400 hover:text-blue-300 transition-colors duration-200">Lite V5</a>
         </div>
         <div class="mt-auto space-y-4">
-            <button @click="mobileMenuOpen = false; downloadModalOpen = true" class="w-full py-5 bg-white text-black font-pixel text-xl tracking-widest hover:bg-gray-200 transition-all">DOWNLOAD</button>
-            <button @click="mobileMenuOpen = false; sourceModalOpen = true" class="w-full py-4 border border-white/20 text-gray-400 font-pixel text-xs flex items-center justify-center gap-2">
+            <button @click="mobileMenuOpen=false;downloadModalOpen=true" class="w-full py-5 bg-white text-black hover:bg-accentGold font-pixel text-xl tracking-widest transition-colors duration-200 rounded-sm">DOWNLOAD</button>
+            <button @click="mobileMenuOpen=false;sourceModalOpen=true"   class="w-full py-4 border border-white/20 text-gray-400 font-pixel text-xs flex items-center justify-center gap-2 hover:border-white/50 hover:text-white transition-colors duration-200 rounded-sm">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 SOURCE CODE
             </button>
@@ -121,154 +237,435 @@
     </div>
 </div>
 
-<div x-show="downloadModalOpen" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center px-4" x-trap.noscroll="downloadModalOpen">
-    <div @click="downloadModalOpen = false" class="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity duration-300" x-transition.opacity></div>
-    <div class="relative w-full max-w-3xl bg-[#080808] border border-white/10 rounded-lg overflow-hidden flex flex-col md:flex-row shadow-2xl max-h-[90vh] overflow-y-auto" x-show="downloadModalOpen" x-transition:enter="transition-all cubic-bezier(0.16, 1, 0.3, 1) duration-400" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition-all duration-200 ease-in" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90 translate-y-4">
-        <div class="flex-1 p-8 border-b md:border-b-0 md:border-r border-white/10 flex flex-col">
+<!-- ══════════════════════ DOWNLOAD MODAL ══ -->
+<div x-show="downloadModalOpen" style="display:none;" class="fixed inset-0 z-[100] flex items-center justify-center px-4" x-trap.noscroll="downloadModalOpen">
+    <div @click="downloadModalOpen=false" class="absolute inset-0 bg-black/95 backdrop-blur-sm" x-transition.opacity></div>
+    <div class="relative w-full max-w-4xl bg-[#080808] border border-white/10 rounded-sm overflow-hidden flex flex-col md:flex-row shadow-2xl max-h-[90vh] overflow-y-auto"
+         x-show="downloadModalOpen"
+         x-transition:enter="transition-transform ease-out duration-300" x-transition:enter-start="scale-95 opacity-0" x-transition:enter-end="scale-100 opacity-100"
+         x-transition:leave="transition-transform ease-in duration-200" x-transition:leave-start="scale-100 opacity-100" x-transition:leave-end="scale-95 opacity-0">
+
+        <!-- Standard -->
+        <div class="flex-1 p-8 md:p-10 border-b md:border-b-0 md:border-r border-white/10 flex flex-col bg-[#050505]">
             <h3 class="text-3xl font-pixel text-white mb-2">STANDARD</h3>
-            <p class="text-accentGold text-[11px] font-bold uppercase tracking-wider mb-6">BEST VISUALS</p>
-            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Volumetric fog, dynamic real-time shadows, and cinematic reflections.</p>
-            <a href="https://www.curseforge.com/minecraft/shaders/truelight-fx/install/7261728" class="block w-full py-4 bg-accentOrange text-white rounded-sm font-bold text-center mb-3 font-pixel tracking-wider hover:brightness-110 shadow-lg">INSTALL VIA APP</a>
-            <a href="https://www.curseforge.com/minecraft/shaders/truelight-fx" target="_blank" class="block w-full py-4 bg-[#111] border border-white/10 text-gray-300 rounded-sm font-pixel tracking-wider text-center text-sm hover:bg-white/5 uppercase">MANUAL DOWNLOAD</a>
+            <p class="text-accentGold text-[11px] font-bold uppercase tracking-widest mb-6">Best Visuals</p>
+            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Volumetric fog, dynamic real-time shadows, and cinematic reflections for high-end setups.</p>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3 font-pixel">CurseForge</p>
+            <a href="https://www.curseforge.com/minecraft/shaders/truelight-fx/install/7261728"
+               class="block w-full py-4 bg-accentOrange text-white rounded-sm font-bold text-center mb-3 font-pixel tracking-wider hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 32 32" fill="currentColor"><path d="M27.912 17.917c-.381-.206-.793-.338-1.218-.39l-.323-.042c-.214-.027-.406-.13-.544-.291-.138-.161-.206-.37-.19-.58.016-.21.116-.405.278-.543.162-.138.37-.207.582-.195.516.026 1.024.14 1.5.338l.474.193.666-3.31-.39-.12a8.888 8.888 0 00-2.552-.375c-.8 0-1.587.165-2.314.487-.728.322-1.367.798-1.875 1.394-.508.596-.868 1.296-1.054 2.05a5.028 5.028 0 00.046 2.26c.26.942.791 1.784 1.527 2.424s1.64 1.042 2.604 1.157l.33.04c.214.026.408.128.546.29.138.16.208.37.192.58-.016.21-.114.405-.275.543-.161.138-.37.208-.584.197a3.82 3.82 0 01-1.742-.484l-.498-.27-.74 3.357.38.148a8.87 8.87 0 003.117.564c.828 0 1.644-.166 2.397-.49.754-.323 1.418-.8 1.95-1.403.53-.602.907-1.314 1.102-2.082.195-.768.2-1.573.016-2.344a5.03 5.03 0 00-1.211-2.122 4.957 4.957 0 00-1.973-1.22zm-12.49-8.584l-2.152 10.32-1.128-10.32H7.615L4.088 22.667h3.78l1.876-9.935 1.074 9.935h3.568l3.872-13.334h-2.837z"/></svg>
+                INSTALL VIA APP
+            </a>
+            <a href="https://www.curseforge.com/minecraft/shaders/truelight-fx" target="_blank"
+               class="block w-full py-3 bg-transparent border border-white/20 text-gray-300 rounded-sm font-pixel tracking-wider text-center text-sm hover:bg-white/10 hover:text-white uppercase mb-6 transition-colors">MANUAL DOWNLOAD</a>
+            
+            <div class="flex items-center gap-3 mb-5"><div class="flex-1 h-px bg-white/10"></div><span class="text-[10px] text-gray-600 font-pixel uppercase tracking-widest">or</span><div class="flex-1 h-px bg-white/10"></div></div>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3 font-pixel">Modrinth</p>
+            <a href="https://modrinth.com/shader/truelightfx" target="_blank"
+               class="modrinth-btn block w-full py-4 rounded-sm font-bold text-center font-pixel tracking-wider transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" viewBox="0 0 512 514" fill="currentColor"><path d="M503.16 323.56a247.41 247.41 0 01-49.94 91.1L405.1 373.5a183.74 183.74 0 0035.81-66.35zM268.64 445.13a183.09 183.09 0 01-62.38-.2l-19.98 59.91a246.82 246.82 0 0011.41 2.41 247.13 247.13 0 0081.04-.12zM91.37 399.45a247.41 247.41 0 01-49.94-91.1l62.19 20.43a183.74 183.74 0 0035.81 66.35zM8.84 190.44A247.29 247.29 0 0158.78 99.34l48.12 41.16a183.71 183.71 0 00-35.81 66.35zM254.37 68.88a183.09 183.09 0 0162.38.2l19.98-59.91A246.82 246.82 0 00325.32 6.76a247.13 247.13 0 00-81.04.12zM431.63 114.55a247.41 247.41 0 0149.94 91.1l-62.19-20.43a183.74 183.74 0 00-35.81-66.35zM256 65.53C149.16 65.53 63.53 151.16 63.53 258S149.16 450.47 256 450.47 448.47 364.84 448.47 258 362.84 65.53 256 65.53zm0 341.94a107.47 107.47 0 110-214.94 107.47 107.47 0 010 214.94z"/></svg>
+                DOWNLOAD ON MODRINTH
+            </a>
         </div>
-        <div class="flex-1 p-8 flex flex-col">
-            <h3 class="text-3xl font-pixel text-white mb-2">LITE</h3>
-            <p class="text-blue-500 text-[11px] font-bold uppercase tracking-wider mb-6">MAX FPS</p>
-            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Essential lighting, faster rendering. Perfect for PvP and Laptops.</p>
-            <a href="https://www.curseforge.com/minecraft/shaders/truelightfx-lite-low-end/install/7275092" class="block w-full py-4 bg-accentOrange text-white rounded-sm font-bold text-center mb-3 font-pixel tracking-wider hover:brightness-110 shadow-lg">INSTALL VIA APP</a>
-            <a href="https://www.curseforge.com/minecraft/shaders/truelightfx-lite-low-end" target="_blank" class="block w-full py-4 bg-[#111] border border-white/10 text-gray-300 rounded-sm font-pixel tracking-wider text-center text-sm hover:bg-white/5 uppercase">MANUAL DOWNLOAD</a>
+
+        <!-- Lite -->
+        <div class="flex-1 p-8 md:p-10 flex flex-col bg-[#050505]">
+            <h3 class="text-3xl font-pixel text-white mb-2 flex items-center gap-3">
+                LITE <span class="px-2 py-0.5 bg-blue-600 border border-blue-500 text-white text-[10px] rounded-sm tracking-widest">V5</span>
+            </h3>
+            <p class="text-blue-500 text-[11px] font-bold uppercase tracking-widest mb-6">Max FPS</p>
+            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Essential lighting, heavily optimized rendering pipeline. Perfect for PvP and Laptops.</p>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3 font-pixel">CurseForge</p>
+            <a href="https://www.curseforge.com/minecraft/shaders/truelightfx-lite-low-end/install/7275092"
+               class="block w-full py-4 bg-accentOrange text-white rounded-sm font-bold text-center mb-3 font-pixel tracking-wider hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 32 32" fill="currentColor"><path d="M27.912 17.917c-.381-.206-.793-.338-1.218-.39l-.323-.042c-.214-.027-.406-.13-.544-.291-.138-.161-.206-.37-.19-.58.016-.21.116-.405.278-.543.162-.138.37-.207.582-.195.516.026 1.024.14 1.5.338l.474.193.666-3.31-.39-.12a8.888 8.888 0 00-2.552-.375c-.8 0-1.587.165-2.314.487-.728.322-1.367.798-1.875 1.394-.508.596-.868 1.296-1.054 2.05a5.028 5.028 0 00.046 2.26c.26.942.791 1.784 1.527 2.424s1.64 1.042 2.604 1.157l.33.04c.214.026.408.128.546.29.138.16.208.37.192.58-.016.21-.114.405-.275.543-.161.138-.37.208-.584.197a3.82 3.82 0 01-1.742-.484l-.498-.27-.74 3.357.38.148a8.87 8.87 0 003.117.564c.828 0 1.644-.166 2.397-.49.754-.323 1.418-.8 1.95-1.403.53-.602.907-1.314 1.102-2.082.195-.768.2-1.573.016-2.344a5.03 5.03 0 00-1.211-2.122 4.957 4.957 0 00-1.973-1.22zm-12.49-8.584l-2.152 10.32-1.128-10.32H7.615L4.088 22.667h3.78l1.876-9.935 1.074 9.935h3.568l3.872-13.334h-2.837z"/></svg>
+                INSTALL VIA APP
+            </a>
+            <a href="https://www.curseforge.com/minecraft/shaders/truelightfx-lite-low-end" target="_blank"
+               class="block w-full py-3 bg-transparent border border-white/20 text-gray-300 rounded-sm font-pixel tracking-wider text-center text-sm hover:bg-white/10 hover:text-white uppercase mb-6 transition-colors">MANUAL DOWNLOAD</a>
+            
+            <div class="flex items-center gap-3 mb-5"><div class="flex-1 h-px bg-white/10"></div><span class="text-[10px] text-gray-600 font-pixel uppercase tracking-widest">or</span><div class="flex-1 h-px bg-white/10"></div></div>
+            
+            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3 font-pixel">Modrinth</p>
+            <a href="https://modrinth.com/shader/truelightfx-lite" target="_blank"
+               class="modrinth-btn block w-full py-4 rounded-sm font-bold text-center font-pixel tracking-wider transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" viewBox="0 0 512 514" fill="currentColor"><path d="M503.16 323.56a247.41 247.41 0 01-49.94 91.1L405.1 373.5a183.74 183.74 0 0035.81-66.35zM268.64 445.13a183.09 183.09 0 01-62.38-.2l-19.98 59.91a246.82 246.82 0 0011.41 2.41 247.13 247.13 0 0081.04-.12zM91.37 399.45a247.41 247.41 0 01-49.94-91.1l62.19 20.43a183.74 183.74 0 0035.81 66.35zM8.84 190.44A247.29 247.29 0 0158.78 99.34l48.12 41.16a183.71 183.71 0 00-35.81 66.35zM254.37 68.88a183.09 183.09 0 0162.38.2l19.98-59.91A246.82 246.82 0 00325.32 6.76a247.13 247.13 0 00-81.04.12zM431.63 114.55a247.41 247.41 0 0149.94 91.1l-62.19-20.43a183.74 183.74 0 00-35.81-66.35zM256 65.53C149.16 65.53 63.53 151.16 63.53 258S149.16 450.47 256 450.47 448.47 364.84 448.47 258 362.84 65.53 256 65.53zm0 341.94a107.47 107.47 0 110-214.94 107.47 107.47 0 010 214.94z"/></svg>
+                DOWNLOAD ON MODRINTH
+            </a>
         </div>
-        <button @click="downloadModalOpen = false" class="absolute top-3 right-3 p-2 text-gray-500 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+
+        <button @click="downloadModalOpen=false" class="absolute top-4 right-4 p-2 text-gray-500 hover:text-white transition-colors bg-black/50 backdrop-blur-md rounded-sm border border-white/10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
     </div>
 </div>
 
-<div x-show="sourceModalOpen" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center px-4" x-trap.noscroll="sourceModalOpen">
-    <div @click="sourceModalOpen = false" class="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity duration-300" x-transition.opacity></div>
-    <div class="relative w-full max-w-3xl bg-[#080808] border border-white/10 rounded-lg overflow-hidden flex flex-col md:flex-row shadow-2xl max-h-[90vh] overflow-y-auto" x-show="sourceModalOpen" x-transition:enter="transition-all cubic-bezier(0.16, 1, 0.3, 1) duration-400" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition-all duration-200 ease-in" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90 translate-y-4">
-        <div class="flex-1 p-8 border-b md:border-b-0 md:border-r border-white/10 flex flex-col">
+<!-- ══════════════════════ SOURCE MODAL ══ -->
+<div x-show="sourceModalOpen" style="display:none;" class="fixed inset-0 z-[100] flex items-center justify-center px-4" x-trap.noscroll="sourceModalOpen">
+    <div @click="sourceModalOpen=false" class="absolute inset-0 bg-black/95 backdrop-blur-sm" x-transition.opacity></div>
+    <div class="relative w-full max-w-4xl bg-[#080808] border border-white/10 rounded-sm overflow-hidden flex flex-col md:flex-row shadow-2xl max-h-[90vh] overflow-y-auto"
+         x-show="sourceModalOpen"
+         x-transition:enter="transition-transform ease-out duration-300" x-transition:enter-start="scale-95 opacity-0" x-transition:enter-end="scale-100 opacity-100"
+         x-transition:leave="transition-transform ease-in duration-200" x-transition:leave-start="scale-100 opacity-100" x-transition:leave-end="scale-95 opacity-0">
+        
+        <div class="flex-1 p-8 md:p-10 border-b md:border-b-0 md:border-r border-white/10 flex flex-col bg-[#050505]">
             <div class="flex items-center gap-3 mb-2">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 <h3 class="text-3xl font-pixel text-white">STANDARD</h3>
             </div>
-            <p class="text-accentGold text-[11px] font-bold uppercase tracking-wider mb-6 ml-9">MAIN BRANCH</p>
-            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Source code for the standard edition. Full features.</p>
-            <a href="https://github.com/OGCRAFTNET/TrueLightFX/tree/main" target="_blank" class="w-full py-4 bg-[#21262d] border border-gray-600 text-white rounded-sm font-bold text-center font-pixel tracking-wider hover:bg-[#30363d] uppercase flex items-center justify-center gap-3">
+            <p class="text-accentGold text-[11px] font-bold uppercase tracking-widest mb-6 ml-9">Main Branch</p>
+            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Source code for the standard edition. Contains all volumetric and high-end features.</p>
+            <a href="https://github.com/OGCRAFTNET/TrueLightFX/tree/main" target="_blank" class="w-full py-4 bg-white text-black rounded-sm font-bold text-center font-pixel tracking-wider hover:bg-accentGold uppercase flex items-center justify-center gap-3 transition-colors">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 VIEW ON GITHUB
             </a>
         </div>
-        <div class="flex-1 p-8 flex flex-col">
+        
+        <div class="flex-1 p-8 md:p-10 flex flex-col bg-[#050505]">
             <div class="flex items-center gap-3 mb-2">
-                <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 <h3 class="text-3xl font-pixel text-white">LITE</h3>
             </div>
-            <p class="text-blue-500 text-[11px] font-bold uppercase tracking-wider mb-6 ml-9">LITE BRANCH</p>
-            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Optimized codebase with stripped features for FPS.</p>
-            <a href="https://github.com/OGCRAFTNET/TrueLightFX-Lite" target="_blank" class="w-full py-4 bg-[#21262d] border border-gray-600 text-white rounded-sm font-bold text-center font-pixel tracking-wider hover:bg-[#30363d] uppercase flex items-center justify-center gap-3">
+            <p class="text-blue-500 text-[11px] font-bold uppercase tracking-widest mb-6 ml-9">Lite Branch</p>
+            <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow">Optimized codebase with stripped features for maximum FPS and performance.</p>
+            <a href="https://github.com/OGCRAFTNET/TrueLightFX-Lite" target="_blank" class="w-full py-4 bg-transparent border border-white/20 text-white rounded-sm font-bold text-center font-pixel tracking-wider hover:bg-white/10 uppercase flex items-center justify-center gap-3 transition-colors">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                 VIEW ON GITHUB
             </a>
         </div>
-        <button @click="sourceModalOpen = false" class="absolute top-3 right-3 p-2 text-gray-500 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        
+        <button @click="sourceModalOpen=false" class="absolute top-4 right-4 p-2 text-gray-500 hover:text-white transition-colors bg-black/50 backdrop-blur-md rounded-sm border border-white/10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
     </div>
 </div>
 
-<section class="relative pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col justify-center">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <div class="space-y-8 relative z-10 reveal-on-scroll order-2 lg:order-1">
-            <div class="inline-flex items-center gap-3 px-4 py-2 bg-white/5 rounded-sm border border-white/10 backdrop-blur-md hover:border-accentGold/30 transition-all cursor-default group hover:scale-105 duration-300">
-                <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
-                <span class="text-sm font-pixel tracking-wide text-gray-300 pt-1">Updated for 1.21</span>
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  HERO — Clean & Flat Intro                                -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section class="relative min-h-[90vh] flex flex-col justify-center overflow-hidden pt-20">
+
+    <!-- Full-bleed background image -->
+    <div id="hero-bg" class="absolute inset-0 -z-10 bg-[#050505]">
+        <img src="https://media.forgecdn.net/attachments/1343/423/truelight-fx-shaders-zonacraft-jpg.jpg"
+             id="hero-parallax-img"
+             class="w-full h-full object-cover opacity-20 scale-[1.03]"
+             style="will-change:transform;">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/70 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/40"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-20 w-full relative z-10">
+        <div class="max-w-2xl">
+
+            <!-- Eyebrow Tag -->
+            <div class="hero-reveal flex items-center gap-3 mb-8" style="animation-delay: 2.6s;">
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-xs font-pixel rounded-sm tracking-widest">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse mr-1"></span>
+                    LITE V5 RELEASED
+                </div>
+                <div class="h-px flex-1 max-w-[40px] bg-white/20 hidden sm:block"></div>
+                <span class="text-[10px] text-gray-400 font-pixel tracking-widest hidden sm:block">OGCRAFTNET STUDIOS</span>
             </div>
-            <h1 class="text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight leading-[0.95] text-white drop-shadow-2xl font-sans">Lighting<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-accentGold via-yellow-500 to-yellow-700 font-pixel tracking-tight">Reimagined</span></h1>
-            <p class="text-lg text-gray-400 max-w-md leading-relaxed border-l-4 border-white/10 pl-6 font-sans">Experience Minecraft like never before. TrueLightFX blends modern rendering techniques with the classic voxel aesthetic you love.</p>
-            <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                <button @click="downloadModalOpen = true" class="px-8 py-4 bg-white text-black rounded-sm font-bold text-center hover:bg-gray-200 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2 group hover:-translate-y-1 active:scale-95 duration-200 font-pixel text-xl tracking-wide">
-                    <svg class="w-5 h-5 group-hover:scale-125 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Get TrueLightFX
+
+            <!-- Single Name Main Headline -->
+            <h1 class="hero-reveal font-pixel font-bold mb-6 text-white" style="font-size:clamp(2.5rem, 8vw, 7rem); line-height: 1; text-shadow: 0 4px 20px rgba(0,0,0,0.8); animation-delay: 2.7s;">
+                TRUELIGHT<span class="text-accentGold">FX</span>
+            </h1>
+
+            <!-- Subline -->
+            <p class="hero-reveal text-base md:text-lg text-gray-400 max-w-lg leading-relaxed mb-6 font-sans" style="animation-delay: 2.8s;">
+                A Minecraft shader pack that reimagines how light works — volumetric atmospherics, cinematic shadows, and physically-inspired reflections. Built in the open.
+            </p>
+
+            <!-- Stat row -->
+            <div class="hero-reveal flex items-center gap-6 mb-12 text-sm text-gray-500 font-pixel" style="animation-delay: 2.9s;">
+                <div class="flex flex-col items-start">
+                    <span class="text-white text-xl font-bold">MIT</span>
+                    <span class="text-[9px] uppercase tracking-widest">License</span>
+                </div>
+                <div class="w-px h-8 bg-white/10"></div>
+                <div class="flex flex-col items-start">
+                    <span class="text-white text-xl font-bold">1.21</span>
+                    <span class="text-[9px] uppercase tracking-widest">Minecraft</span>
+                </div>
+                <div class="w-px h-8 bg-white/10"></div>
+                <div class="flex flex-col items-start">
+                    <span class="text-white text-xl font-bold">2</span>
+                    <span class="text-[9px] uppercase tracking-widest">Editions</span>
+                </div>
+            </div>
+
+            <!-- CTA row -->
+            <div class="hero-reveal flex flex-col sm:flex-row gap-4" style="animation-delay: 3.0s;">
+                <button @click="downloadModalOpen=true"
+                    class="px-8 py-4 bg-white text-black rounded-sm font-bold flex items-center justify-center gap-3 transition-colors hover:bg-accentGold font-pixel text-lg tracking-wide">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download Free
                 </button>
-                <button @click="sourceModalOpen = true" class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-sm font-semibold text-center hover:bg-white/5 hover:border-white/50 transition-all flex items-center justify-center gap-2 hover:-translate-y-1 active:scale-95 duration-200 font-pixel text-xl tracking-wide"><span>Source Code</span></button>
-            </div>
-        </div>
-        <div class="relative perspective-1000 reveal-on-scroll order-1 lg:order-2">
-            <div class="relative rounded-lg overflow-hidden shadow-2xl border-4 border-white/10 bg-cardBg aspect-video group animate-float">
-                <img src="https://media.forgecdn.net/attachments/1343/423/truelight-fx-shaders-zonacraft-jpg.jpg" alt="TrueLightFX Hero" class="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[1.5s] group-hover:scale-105 group-hover:contrast-110">
+                <button @click="sourceModalOpen=true"
+                    class="px-8 py-4 bg-transparent border border-white/20 text-white rounded-sm font-semibold hover:bg-white/10 transition-colors flex items-center justify-center gap-2 font-pixel text-lg tracking-wide">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    Source Code
+                </button>
             </div>
         </div>
     </div>
 </section>
 
-<section id="features" class="py-24 bg-cardBg/30 relative border-t border-white/5">
+<!-- ══════════════════════ FEATURES ══ -->
+<section id="features" class="py-24 relative bg-[#050505]">
     <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16 reveal-on-scroll">
+        <div class="reveal text-center mb-16">
             <h2 class="text-4xl font-bold text-white mb-2 font-pixel">Core Features</h2>
-            <p class="text-gray-500 font-sans tracking-wide">Built for immersion.</p>
+            <p class="text-gray-500 font-sans tracking-wide">Crafted for maximum immersion.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 reveal-on-scroll">
-            <div class="p-6 rounded-sm bg-white/5 border border-white/10 hover:border-accentGold/50 transition-colors group">
+        
+        <div class="stagger-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="feature-card p-8 rounded-sm cursor-default group">
+                <div class="icon-box w-10 h-10 mb-6 border border-white/10 rounded-sm flex items-center justify-center bg-[#0a0a0a]">
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-accentGold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                </div>
                 <h3 class="font-bold text-white mb-2 font-pixel text-lg">Open Source</h3>
-                <p class="text-sm text-gray-400 font-sans">M.I.T. licensed. Community driven.</p>
+                <p class="text-sm text-gray-400 font-sans leading-relaxed">Released under the M.I.T. license. Fully community driven and transparent.</p>
             </div>
-            <div class="p-6 rounded-sm bg-white/5 border border-white/10 hover:border-accentGold/50 transition-colors group">
-                <h3 class="font-bold text-white mb-2 font-pixel text-lg">BSL Aesthetics</h3>
-                <p class="text-sm text-gray-400 font-sans">Inspired by the legendary BSL Shaders.</p>
+            
+            <div class="feature-card p-8 rounded-sm cursor-default group">
+                <div class="icon-box w-10 h-10 mb-6 border border-white/10 rounded-sm flex items-center justify-center bg-[#0a0a0a]">
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-accentGold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3l14 9-14 9V3z"/></svg>
+                </div>
+                <h3 class="font-bold text-white mb-2 font-pixel text-lg">Vibrant Visuals</h3>
+                <p class="text-sm text-gray-400 font-sans leading-relaxed">Deeply inspired by the legendary Sildur's Vibrant Visuals aesthetics.</p>
             </div>
-            <div class="p-6 rounded-sm bg-white/5 border border-white/10 hover:border-accentGold/50 transition-colors group">
+            
+            <div class="feature-card p-8 rounded-sm cursor-default group">
+                <div class="icon-box w-10 h-10 mb-6 border border-white/10 rounded-sm flex items-center justify-center bg-[#0a0a0a]">
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-accentGold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                </div>
                 <h3 class="font-bold text-white mb-2 font-pixel text-lg">Atmospheric</h3>
-                <p class="text-sm text-gray-400 font-sans">Volumetric clouds and realistic fog.</p>
+                <p class="text-sm text-gray-400 font-sans leading-relaxed">Advanced volumetric clouds, thick realistic fog, and clean bloom effects.</p>
             </div>
-            <div class="p-6 rounded-sm bg-white/5 border border-white/10 hover:border-accentGold/50 transition-colors group">
-                <h3 class="font-bold text-white mb-2 font-pixel text-lg">Safe</h3>
-                <p class="text-sm text-gray-400 font-sans">Verified downloads via CurseForge.</p>
+            
+            <div class="feature-card p-8 rounded-sm cursor-default group">
+                <div class="icon-box w-10 h-10 mb-6 border border-white/10 rounded-sm flex items-center justify-center bg-[#0a0a0a]">
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-accentGold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <h3 class="font-bold text-white mb-2 font-pixel text-lg">Verified Safe</h3>
+                <p class="text-sm text-gray-400 font-sans leading-relaxed">All downloads are verified via Modrinth and CurseForge ecosystems.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section id="lite" class="py-24 relative overflow-hidden border-t border-white/5">
-    <div class="absolute inset-0 bg-gradient-to-br from-[#020412] to-[#050a1f] -z-10"></div>
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div class="reveal-on-scroll order-2 md:order-1">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-sm border border-blue-500/20 text-blue-400 text-sm font-bold uppercase tracking-wider mb-6 font-pixel">Low End Optimization</div>
-            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 font-pixel">TrueLightFX <span class="text-blue-500">Lite</span></h2>
-            <p class="text-gray-400 text-lg mb-6 leading-relaxed border-l-2 border-blue-500/30 pl-4 font-sans">Designed for laptops, integrated graphics, and competitive PvP. We stripped away heavy volumetric effects while keeping the beautiful water, color grading, and crisp shadows.</p>
-            <button @click="downloadModalOpen = true" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-sm font-bold transition-all shadow-lg shadow-blue-900/50 font-pixel tracking-wide text-lg border-b-4 border-blue-800 hover:border-blue-700 active:border-0 active:translate-y-1">Get Lite Edition</button>
+<!-- ══════════════════════ STANDARD SECTION ══ -->
+<section id="standard" class="py-24 relative overflow-hidden border-t border-white/5 bg-[#050505]">
+    <!-- Ambient Blur -->
+    <div class="absolute top-1/2 left-0 w-[600px] h-[600px] bg-accentGold/5 rounded-full blur-[100px] -translate-y-1/2 pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+
+        <!-- Text side (Left) -->
+        <div class="reveal from-left order-2 lg:order-1">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-accentGold/10 text-accentGold border border-accentGold/20 text-sm font-bold uppercase tracking-widest mb-6 font-pixel rounded-sm">
+                THE MAIN EXPERIENCE
+            </div>
+            
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-pixel leading-tight">
+                TrueLightFX<br>
+                <span class="text-accentGold">Standard</span>
+            </h2>
+            
+            <p class="text-gray-400 text-lg mb-4 leading-relaxed font-sans">
+                Built for modern hardware. Experience the full vision with dense volumetric atmospherics, physically-inspired reflections, and rich real-time cinematic shadows.
+            </p>
+
+            <ul class="text-sm text-gray-400 font-sans space-y-3 mb-10 border-l-2 border-accentGold/30 pl-5">
+                <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-accentGold rounded-sm flex-shrink-0"></span>Dense volumetric clouds and realistic fog</li>
+                <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-accentGold rounded-sm flex-shrink-0"></span>Dynamic water with true surface reflections</li>
+                <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-accentGold rounded-sm flex-shrink-0"></span>Rich bloom and cinematic color grading</li>
+            </ul>
+
+            <button @click="downloadModalOpen=true"
+                class="px-8 py-4 bg-white hover:bg-accentGold text-black rounded-sm font-bold transition-colors font-pixel tracking-wider text-lg">
+                Get Standard
+            </button>
         </div>
-        <div class="relative rounded-lg overflow-hidden border-4 border-blue-500/20 aspect-video group reveal-on-scroll order-1 md:order-2">
-            <div class="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-900/10 transition-colors"></div>
-            <div class="absolute inset-0 flex items-center justify-center"><span class="text-6xl md:text-8xl font-pixel text-blue-500 opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-700">MAX FPS</span></div>
-            <img src="https://media.forgecdn.net/attachments/1254/559/readme_img-png.png" class="w-full h-full object-cover opacity-50 mix-blend-overlay grayscale">
+
+        <!-- Slideshow side (Right) -->
+        <div class="reveal from-right order-1 lg:order-2">
+            <div class="slideshow-container standard-slideshow relative rounded-sm overflow-hidden border border-white/10 aspect-video bg-black">
+                <!-- Slides -->
+                <img src="https://media.forgecdn.net/attachments/1343/422/truelight-fx-shaders-2-webp.webp" class="slide active" alt="Standard Screenshot 1">
+                <img src="https://media.forgecdn.net/attachments/1343/418/truelight-fx-shaders-12-jpg.jpg" class="slide" alt="Standard Screenshot 2">
+                <img src="https://media.forgecdn.net/attachments/1343/420/truelight-fx-shaders-6-webp.webp" class="slide" alt="Standard Screenshot 3">
+                <img src="https://media.forgecdn.net/attachments/1179/626/2025-05-06_17-55-51-png.png" class="slide" alt="Standard Screenshot 4">
+                
+                <!-- Badge -->
+                <div class="absolute top-4 left-4 z-20 px-3 py-1.5 bg-black/80 border border-white/10 rounded-sm">
+                    <span class="text-[10px] font-pixel text-accentGold tracking-widest uppercase">STANDARD EDITION</span>
+                </div>
+                
+                <!-- Dots -->
+                <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 slide-dots-wrapper">
+                    <button class="slide-dot active" data-index="0"></button>
+                    <button class="slide-dot"        data-index="1"></button>
+                    <button class="slide-dot"        data-index="2"></button>
+                    <button class="slide-dot"        data-index="3"></button>
+                </div>
+                
+                <!-- Arrows -->
+                <button class="slide-prev absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/80 border border-white/10 rounded-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button class="slide-next absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/80 border border-white/10 rounded-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
         </div>
+
     </div>
 </section>
 
-<section id="gallery" class="py-24 bg-pageBg relative border-t border-white/5">
-    <div class="max-w-7xl mx-auto px-6">
-        <h2 class="text-4xl font-bold mb-12 text-white flex items-center gap-4 reveal-on-scroll font-pixel"><span class="w-8 h-[4px] bg-accentGold"></span>Visual Showcase</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 h-auto md:h-[600px]">
-            <div class="col-span-2 row-span-2 rounded-lg overflow-hidden relative group border-2 border-white/5 reveal-on-scroll hover:border-accentGold/50 transition-colors"><img src="https://media.forgecdn.net/attachments/1343/422/truelight-fx-shaders-2-webp.webp" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"></div>
-            <div class="rounded-lg overflow-hidden relative group border-2 border-white/5 reveal-on-scroll hover:border-accentGold/50 transition-colors h-48 md:h-auto"><img src="https://media.forgecdn.net/attachments/1343/418/truelight-fx-shaders-12-jpg.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"></div>
-            <div class="rounded-lg overflow-hidden relative group border-2 border-white/5 reveal-on-scroll hover:border-accentGold/50 transition-colors h-48 md:h-auto"><img src="https://media.forgecdn.net/attachments/1343/420/truelight-fx-shaders-6-webp.webp" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"></div>
-            <div class="col-span-2 rounded-lg overflow-hidden relative group border-2 border-white/5 reveal-on-scroll hover:border-accentGold/50 transition-colors h-48 md:h-auto"><img src="https://media.forgecdn.net/attachments/1179/626/2025-05-06_17-55-51-png.png" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"></div>
+<!-- ══════════════════════ LITE SECTION ══ -->
+<section id="lite" class="py-24 relative overflow-hidden border-t border-white/5 bg-[#080a0f]">
+    <!-- Ambient Blur -->
+    <div class="absolute top-1/2 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[100px] -translate-y-1/2 pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+
+        <!-- Slideshow side (Left) -->
+        <div class="reveal from-left order-1 lg:order-1">
+            <div class="slideshow-container lite-slideshow relative rounded-sm overflow-hidden border border-white/10 aspect-video bg-black">
+                <!-- Slides -->
+                <img src="https://media.forgecdn.net/attachments/1570/155/2026-03-07_23-40-34-png.png" class="slide active" alt="Lite screenshot 1">
+                <img src="https://media.forgecdn.net/attachments/1570/151/2026-03-07_23-39-00-png.png" class="slide"        alt="Lite screenshot 2">
+                <img src="https://media.forgecdn.net/attachments/1570/153/2026-03-07_23-39-19-png.png" class="slide"        alt="Lite screenshot 3">
+                
+                <!-- Badge -->
+                <div class="absolute top-4 left-4 z-20 px-3 py-1.5 bg-black/80 border border-white/10 rounded-sm">
+                    <span class="text-[10px] font-pixel text-blue-400 tracking-widest uppercase">LITE V5 ENGINE</span>
+                </div>
+                
+                <!-- Dots -->
+                <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 slide-dots-wrapper">
+                    <button class="slide-dot active" data-index="0"></button>
+                    <button class="slide-dot"        data-index="1"></button>
+                    <button class="slide-dot"        data-index="2"></button>
+                </div>
+                
+                <!-- Arrows -->
+                <button class="slide-prev absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/80 border border-white/10 rounded-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button class="slide-next absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/80 border border-white/10 rounded-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors z-20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
         </div>
+
+        <!-- Text side (Right) -->
+        <div class="reveal from-right order-2 lg:order-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-sm font-bold uppercase tracking-widest mb-6 font-pixel rounded-sm">
+                V5 UPDATE LIVE
+            </div>
+            
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-pixel leading-tight">
+                TrueLightFX<br>
+                <span class="text-blue-500">Lite V5</span>
+            </h2>
+            
+            <p class="text-gray-400 text-lg mb-4 leading-relaxed font-sans">
+                Designed for laptops, integrated graphics, and competitive PvP. We stripped away heavy volumetric overhead while retaining the beautiful core lighting.
+            </p>
+
+            <ul class="text-sm text-gray-400 font-sans space-y-3 mb-10 border-l-2 border-blue-500/30 pl-5">
+                <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-blue-500 rounded-sm flex-shrink-0"></span>New highly optimized V5 render pipeline</li>
+                <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-blue-500 rounded-sm flex-shrink-0"></span>Zero volumetric fog overhead</li>
+                <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-blue-500 rounded-sm flex-shrink-0"></span>Crisp shadows & Vibrant Visuals color grading</li>
+            </ul>
+
+            <button @click="downloadModalOpen=true"
+                class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-sm font-bold transition-colors font-pixel tracking-wider text-lg">
+                Get Lite V5
+            </button>
+        </div>
+
     </div>
 </section>
 
-<section class="py-20 bg-black flex flex-col items-center justify-center text-center px-6 border-t border-white/10 relative">
-    <a href="https://github.com/OGCRAFTNET/TrueLightFX" target="_blank" class="mb-8 text-white hover:text-accentGold transition-all hover:scale-110 duration-200 reveal-on-scroll"><svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-    <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 font-pixel reveal-on-scroll">Built in the Open.</h2>
-    <p class="text-gray-500 max-w-2xl text-sm mb-12 font-sans reveal-on-scroll">TrueLightFX is licensed under the M.I.T. Inspired by Vibrant Visuals.</p>
-    <button @click="sourceModalOpen = true" class="reveal-on-scroll relative inline-flex items-center justify-center px-8 py-4 bg-[#333] border-2 border-[#555] rounded-sm text-white font-pixel text-xl tracking-wide hover:bg-[#444] hover:border-white transition-all shadow-lg">Browse Repository</button>
-    <p class="text-xs text-gray-600 font-pixel mt-16">&copy; 2023-2026 OGCRAFTNET STUDIOS · Vienna, AT</p>
+<!-- ══════════════════════ FOOTER ══ -->
+<section class="py-24 bg-black flex flex-col items-center justify-center text-center px-6 border-t border-white/10 relative">
+    <a href="https://github.com/OGCRAFTNET/TrueLightFX" target="_blank"
+       class="reveal mb-10 text-gray-500 hover:text-accentGold transition-colors">
+        <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+    </a>
+    
+    <h2 class="reveal text-4xl md:text-5xl font-bold text-white mb-6 font-pixel">Built in the Open.</h2>
+    <p class="reveal text-gray-500 max-w-xl text-sm mb-12 font-sans">TrueLightFX is licensed under the M.I.T. License. Deeply inspired by Vibrant Visuals.</p>
+    
+    <button @click="sourceModalOpen=true" class="reveal inline-flex items-center justify-center px-8 py-4 bg-transparent border border-gray-600 rounded-sm text-white font-pixel text-lg tracking-wide hover:bg-white/10 transition-colors">
+        Browse Repository
+    </button>
+    
+    <p class="text-[10px] text-gray-600 font-pixel mt-24 uppercase tracking-widest">&copy; 2023-2026 OGCRAFTNET STUDIOS · VIENNA, AT</p>
 </section>
 
 <script>
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add('reveal-visible');
-        });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+// ── Nav scroll ───────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+    document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY>50);
+},{passive:true});
+
+// ── Hero parallax ────────────────────────────────────────────
+const heroImg = document.getElementById('hero-parallax-img');
+window.addEventListener('scroll',()=>{
+    if(heroImg) {
+        const y = window.scrollY * 0.15;
+        heroImg.style.transform = `scale(1.03) translateY(${y}px)`;
+    }
+},{passive:true});
+
+// ── IntersectionObserver ─────────────────────────────────────
+const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+},{threshold:0.15});
+document.querySelectorAll('.reveal,.stagger-children,.hero-reveal').forEach(el=>io.observe(el));
+
+// ── General Slideshow Script ─────────────────────────────────
+document.querySelectorAll('.slideshow-container').forEach(container => {
+    const slides = container.querySelectorAll('.slide');
+    const dots = container.querySelectorAll('.slide-dot');
+    const nextBtn = container.querySelector('.slide-next');
+    const prevBtn = container.querySelector('.slide-prev');
+    let current = 0, timer;
+
+    if(!slides.length) return;
+
+    function goTo(n) {
+        slides[current].classList.remove('active');
+        if(dots[current]) dots[current].classList.remove('active');
+        
+        current = (n + slides.length) % slides.length;
+        
+        slides[current].classList.add('active');
+        if(dots[current]) dots[current].classList.add('active');
+    }
+    
+    function next() { goTo(current+1); resetTimer(); }
+    function prev() { goTo(current-1); resetTimer(); }
+    function resetTimer() { clearInterval(timer); timer = setInterval(next, 4000); }
+
+    if(nextBtn) nextBtn.addEventListener('click', next);
+    if(prevBtn) prevBtn.addEventListener('click', prev);
+    dots.forEach(d => d.addEventListener('click', () => { goTo(+d.dataset.index); resetTimer(); }));
+    
+    resetTimer();
+});
 </script>
 </body>
 </html>
